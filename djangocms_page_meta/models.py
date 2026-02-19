@@ -1,8 +1,8 @@
 import ast
 
-from cms.extensions import PageExtension, TitleExtension
+from cms.extensions import PageExtension, PageContentExtension
 from cms.extensions.extension_pool import extension_pool
-from cms.models import Page, Title
+from cms.models import Page, PageContent
 from django.conf import settings
 from django.core.cache import cache
 from django.db import models
@@ -59,9 +59,7 @@ class PageMeta(PageExtension):
         blank=True,
         help_text=_("'@' character not required."),
     )
-    twitter_type = models.CharField(
-        _("Resource type"), max_length=255, choices=meta_settings.TWITTER_TYPES, blank=True
-    )
+    twitter_type = models.CharField(_("Resource type"), max_length=255, choices=meta_settings.TWITTER_TYPES, blank=True)
     schemaorg_type = models.CharField(
         _("Resource type"),
         max_length=255,
@@ -98,7 +96,7 @@ class PageMeta(PageExtension):
 extension_pool.register(PageMeta)
 
 
-class TitleMeta(TitleExtension):
+class TitleMeta(PageContentExtension):
     image = FilerFileField(
         null=True,
         blank=True,
@@ -110,9 +108,7 @@ class TitleMeta(TitleExtension):
     description = models.CharField(max_length=2000, default="", blank=True)
     og_description = models.CharField(_("Facebook Description"), max_length=2000, default="", blank=True)
     twitter_description = models.CharField(_("Twitter Description"), max_length=2000, default="", blank=True)
-    schemaorg_name = models.CharField(
-        _("Schemaorg Name"), max_length=255, blank=True, help_text=_("Name of the item.")
-    )
+    schemaorg_name = models.CharField(_("Schemaorg Name"), max_length=255, blank=True, help_text=_("Name of the item."))
     schemaorg_description = models.CharField(
         _("Schemaorg Description"), max_length=255, blank=True, help_text=_("Description of the item.")
     )
@@ -206,7 +202,7 @@ def cleanup_page(sender, instance, **kwargs):
         cache.delete(key)
 
 
-@receiver(pre_delete, sender=Title)
+@receiver(pre_delete, sender=PageContent)
 def cleanup_title(sender, instance, **kwargs):
     key = get_cache_key(instance.page, instance.language)
     cache.delete(key)

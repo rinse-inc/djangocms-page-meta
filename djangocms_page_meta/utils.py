@@ -39,7 +39,7 @@ def get_page_meta(page, language):
     meta = cache.get(meta_key)
     if not meta:
         meta = Meta()
-        title = page.get_title_obj(language)
+        page_content = page.get_content_obj(language)
         default_meta_image = DefaultMetaImage.objects.first().image
         meta.extra_custom_props = []
 
@@ -47,10 +47,10 @@ def get_page_meta(page, language):
         if not meta.title:
             meta.title = page.get_title(language)
 
-        if title.meta_description:
-            meta.description = title.meta_description.strip()
+        if page_content.meta_description:
+            meta.description = page_content.meta_description.strip()
         try:
-            titlemeta = title.titlemeta
+            titlemeta = page_content.titlemeta
             if titlemeta.description:
                 meta.description = titlemeta.description.strip()
             if titlemeta.keywords:
@@ -63,7 +63,7 @@ def get_page_meta(page, language):
             if not meta.twitter_description:
                 meta.twitter_description = meta.description
             if titlemeta.image:
-                meta.image = title.titlemeta.image.canonical_url or title.titlemeta.image.url
+                meta.image = page_content.titlemeta.image.canonical_url or page_content.titlemeta.image.url
             meta.schemaorg_description = titlemeta.schemaorg_description.strip()
             if not meta.schemaorg_description:
                 meta.schemaorg_description = meta.description
@@ -93,8 +93,8 @@ def get_page_meta(page, language):
             "twitter_site": meta_settings.get_setting("TWITTER_SITE"),
             "twitter_author": meta_settings.get_setting("TWITTER_AUTHOR"),
             "schemaorg_type": meta_settings.get_setting("SCHEMAORG_TYPE"),
-            "schemaorg_datePublished": page.publication_date.isoformat() if page.publication_date else None,
-            "schemaorg_dateModified": page.changed_date.isoformat() if page.changed_date else None,
+            "schemaorg_datePublished": page_content.creation_date.isoformat() if page_content.creation_date else None,
+            "schemaorg_dateModified": page_content.changed_date.isoformat() if page_content.changed_date else None,
         }
         try:
             pagemeta = page.pagemeta
@@ -108,12 +108,10 @@ def get_page_meta(page, language):
             meta.twitter_author = pagemeta.twitter_author
             meta.schemaorg_type = pagemeta.schemaorg_type
             meta.robots = pagemeta.robots_list
-            if page.publication_date:
-                meta.published_time = page.publication_date.isoformat()
-            if page.changed_date:
-                meta.modified_time = page.changed_date.isoformat()
-            if page.publication_end_date:
-                meta.expiration_time = page.publication_end_date.isoformat()
+            if page_content.creation_date:
+                meta.published_time = page_content.creation_date.isoformat()
+            if page_content.changed_date:
+                meta.modified_time = page_content.changed_date.isoformat()
             if meta.og_type == "article":
                 meta.og_publisher = pagemeta.og_publisher
                 meta.og_author_url = pagemeta.og_author_url

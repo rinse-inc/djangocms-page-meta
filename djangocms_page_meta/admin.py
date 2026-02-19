@@ -1,5 +1,5 @@
 from cms.admin.pageadmin import PageAdmin
-from cms.extensions import PageExtensionAdmin, TitleExtensionAdmin
+from cms.extensions import PageExtensionAdmin, PageContentExtensionAdmin
 from cms.utils import get_language_from_request
 from django.conf import settings
 from django.contrib import admin
@@ -68,7 +68,7 @@ class PageMetaAdmin(PageExtensionAdmin):
 
 
 @admin.register(TitleMeta)
-class TitleMetaAdmin(TitleExtensionAdmin):
+class TitleMetaAdmin(PageContentExtensionAdmin):
     form = TitleMetaAdminForm
     inlines = (GenericAttributeTitleInline,)
 
