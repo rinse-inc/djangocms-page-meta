@@ -24,8 +24,7 @@ PAGE_META_DEFAULT_META_IMAGE_TITLE = _("Default meta image")
 @toolbar_pool.register
 class PageToolbarMeta(CMSToolbar):
     def populate(self):
-        # always use draft if we have a page
-        self.page = get_page_draft(self.request.current_page)
+        self.page = self.request.current_page
         if not self.page:
             # Nothing to do
             return
@@ -76,10 +75,12 @@ class PageToolbarMeta(CMSToolbar):
                 # not in urls
                 pass
             else:
-                meta_menu.add_modal_item(PAGE_META_ITEM_TITLE, url=url, disabled=not_edit_mode, position=position)
+                # Allow editing of page meta even if the page is not in edit mode,
+                # since some pages have no CMS editable content, only meta.
+                meta_menu.add_modal_item(PAGE_META_ITEM_TITLE, url=url, disabled=False, position=position)
             # Title tags
             site_id = self.page.node.site_id
-            titles = self.page.title_set.filter(language__in=get_language_list(site_id))
+            titles = self.page.pagecontent_set.filter(language__in=get_language_list(site_id))
 
             title_extensions = {
                 t.extended_object_id: t
@@ -102,4 +103,4 @@ class PageToolbarMeta(CMSToolbar):
                 else:
                     position += 1
                     language = get_language_object(title.language)
-                    meta_menu.add_modal_item(language["name"], url=url, disabled=not_edit_mode, position=position)
+                    meta_menu.add_modal_item(language["name"], url=url, disabled=False, position=position)
