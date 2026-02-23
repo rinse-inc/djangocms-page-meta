@@ -168,7 +168,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "extended_object",
-                    models.OneToOneField(editable=False, to="cms.pagecontent", on_delete=models.CASCADE),
+                    models.OneToOneField(editable=False, to="cms.Title", on_delete=models.CASCADE),
                 ),
                 (
                     "image",

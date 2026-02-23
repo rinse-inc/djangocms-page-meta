@@ -71,9 +71,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="titlemeta",
             name="extended_object",
-            field=models.OneToOneField(
-                editable=False, on_delete=django.db.models.deletion.CASCADE, to="cms.pagecontent"
-            ),
+            field=models.OneToOneField(editable=False, on_delete=django.db.models.deletion.CASCADE, to="cms.Title"),
         ),
         migrations.AlterField(
             model_name="titlemeta",
