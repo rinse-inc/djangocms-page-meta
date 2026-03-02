@@ -40,7 +40,11 @@ def get_page_meta(page, language):
     if not meta:
         meta = Meta()
         page_content = page.get_content_obj(language)
-        default_meta_image = DefaultMetaImage.objects.first().image
+        default_meta_image_obj = DefaultMetaImage.objects.first()
+        if default_meta_image_obj:
+            default_meta_image = default_meta_image_obj.image
+        else:
+            default_meta_image = None
         meta.extra_custom_props = []
 
         meta.title = page.get_page_title(language)
@@ -93,8 +97,12 @@ def get_page_meta(page, language):
             "twitter_site": meta_settings.get_setting("TWITTER_SITE"),
             "twitter_author": meta_settings.get_setting("TWITTER_AUTHOR"),
             "schemaorg_type": meta_settings.get_setting("SCHEMAORG_TYPE"),
-            "schemaorg_datePublished": page_content.creation_date.isoformat() if page_content.creation_date else None,
-            "schemaorg_dateModified": page_content.changed_date.isoformat() if page_content.changed_date else None,
+            "schemaorg_datePublished": page_content.creation_date.isoformat()
+            if page_content and page_content.creation_date
+            else None,
+            "schemaorg_dateModified": page_content.changed_date.isoformat()
+            if page_content and page_content.changed_date
+            else None,
         }
         try:
             pagemeta = page.pagemeta
